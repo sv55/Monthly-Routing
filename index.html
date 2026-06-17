@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Routing">
+<meta name="theme-color" content="#0E7C66">
+<title>Monthly Routing</title>
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="icon" href="icon-192.png">
+<style>
+  :root{
+    --paper:#EEF1EF;--card:#FFF;--ink:#13201C;--muted:#6A7872;--line:#DCE3DF;
+    --teal:#0E7C66;--teal-soft:#E3F0EC;--clay:#B85A36;--clay-soft:#F6E7DF;--radius:16px;
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+  html,body{margin:0;}
+  body{
+    font-family:-apple-system,system-ui,"Segoe UI",Roboto,sans-serif;
+    background:var(--paper);color:var(--ink);line-height:1.45;
+    padding:max(20px,env(safe-area-inset-top)) 16px calc(28px + env(safe-area-inset-bottom));
+    max-width:560px;margin:0 auto;-webkit-font-smoothing:antialiased;
+  }
+  .mono{font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace;font-variant-numeric:tabular-nums;}
+  header{margin:6px 2px 22px;}
+  .eyebrow{font-size:11px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:var(--teal);display:flex;align-items:center;gap:8px;}
+  .eyebrow::after{content:"";height:1px;flex:1;background:var(--line);}
+  h1{font-size:30px;font-weight:800;letter-spacing:-.02em;margin:10px 0 2px;}
+  .sub{color:var(--muted);font-size:14px;}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:18px 16px;margin-bottom:14px;}
+  .card-title{font-size:11px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);margin:0 0 14px;}
+  .field{margin-bottom:14px;}
+  .field:last-child{margin-bottom:0;}
+  .field label{display:block;font-size:13px;font-weight:600;margin-bottom:6px;}
+  .field .hint{color:var(--muted);font-weight:400;font-size:12px;}
+  .inputwrap{position:relative;display:flex;align-items:center;}
+  .inputwrap .rupee{position:absolute;left:14px;font-weight:600;color:var(--muted);font-family:ui-monospace,monospace;pointer-events:none;}
+  input[type=text]{width:100%;font-family:ui-monospace,"SF Mono",Menlo,monospace;font-size:17px;font-weight:500;padding:13px 14px 13px 30px;border:1.5px solid var(--line);border-radius:11px;background:#FBFCFB;color:var(--ink);}
+  input[type=text]:focus{outline:none;border-color:var(--teal);background:#fff;}
+  input::placeholder{color:#B7C2BC;}
+  button.calc{width:100%;font:inherit;font-size:16px;font-weight:700;color:#fff;background:var(--teal);border:none;border-radius:13px;padding:16px;cursor:pointer;margin-bottom:14px;}
+  button.calc:active{opacity:.85;}
+  details.settings{margin-bottom:14px;}
+  details.settings>summary{list-style:none;cursor:pointer;background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:15px 16px;font-size:13px;font-weight:600;display:flex;align-items:center;justify-content:space-between;}
+  details.settings>summary::-webkit-details-marker{display:none;}
+  details.settings[open]>summary{border-radius:var(--radius) var(--radius) 0 0;border-bottom:none;}
+  .settings-body{background:var(--card);border:1px solid var(--line);border-top:none;border-radius:0 0 var(--radius) var(--radius);padding:4px 16px 16px;}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+  .mini label{font-size:12px;font-weight:600;display:block;margin:12px 0 5px;}
+  .mini input{font-size:14px;padding:10px 10px 10px 26px;}
+  .mini .rupee{left:11px;font-size:13px;}
+
+  .plan-section-title{font-size:11px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);margin:24px 4px 12px;}
+  .empty{color:var(--muted);font-size:14px;text-align:center;padding:26px 14px;background:var(--card);border:1px dashed var(--line);border-radius:var(--radius);}
+
+  .summary{display:flex;justify-content:space-between;align-items:center;background:var(--ink);color:#fff;border-radius:var(--radius);padding:16px 18px;margin-bottom:14px;}
+  .summary .lbl{font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;opacity:.7;}
+  .summary .big{font-size:24px;font-weight:800;margin-top:2px;}
+  .summary .held{text-align:right;}
+  .summary .held .chip{display:inline-flex;gap:5px;align-items:center;background:rgba(255,255,255,.14);color:#fff;font-size:11px;font-weight:700;padding:3px 9px;border-radius:999px;}
+  .summary .held .v{font-size:16px;font-weight:700;margin-top:5px;}
+
+  /* transfer cards */
+  .tx{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:15px 16px;margin-bottom:11px;cursor:pointer;transition:border-color .15s;}
+  .tx:active{border-color:#C6D0CB;}
+  .tx-top{display:flex;align-items:center;justify-content:space-between;gap:10px;}
+  .tx-label{font-size:12px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--muted);}
+  .tx-chev{color:#B7C2BC;font-size:20px;line-height:1;transition:transform .2s;transform:rotate(90deg);}
+  .tx.open .tx-chev{transform:rotate(-90deg);}
+  .tx-amt{font-size:25px;font-weight:800;margin-top:5px;letter-spacing:-.01em;}
+  .tx-detail{max-height:0;overflow:hidden;transition:max-height .25s ease;}
+  .tx.open .tx-detail{max-height:420px;}
+  .tx-detail-inner{padding-top:13px;margin-top:13px;border-top:1px solid var(--line);font-size:13px;color:var(--muted);}
+  .tx-detail-inner .note{font-style:italic;}
+  .sline{display:flex;align-items:baseline;gap:8px;padding:4px 0;}
+  .sline .sp{flex:1;border-bottom:1px dotted #DCE3DF;transform:translateY(-3px);}
+  .sline .sa{font-family:ui-monospace,monospace;font-weight:600;color:var(--ink);}
+  .sweep-amt{color:var(--clay);font-weight:600;font-family:ui-monospace,monospace;}
+
+  .tx.final{background:var(--teal-soft);border-color:#C4E0D7;cursor:pointer;}
+  .tx.final .tx-label{color:var(--teal);}
+  .tx.final .tx-amt{color:var(--teal);}
+  .tx.final .tx-chev{color:#7FB6A6;}
+
+  .warn{background:var(--clay-soft);border:1px solid #E9C9B9;border-radius:11px;padding:11px 13px;font-size:13px;color:#8A3F22;margin-bottom:11px;}
+</style>
+</head>
+<body>
+<header>
+  <div class="eyebrow">Monthly Routing</div>
+  <h1>Salary allocation</h1>
+  <div class="sub" id="monthLabel">Push every transfer from Axis.</div>
+</header>
+
+<div class="card">
+  <p class="card-title">This month's inputs</p>
+  <div class="field"><label for="salary">Salary credited</label>
+    <div class="inputwrap"><span class="rupee">&#8377;</span><input id="salary" type="text" inputmode="decimal" placeholder="0" oninput="calculate()"></div></div>
+  <div class="field"><label for="axis">Current Axis balance</label>
+    <div class="inputwrap"><span class="rupee">&#8377;</span><input id="axis" type="text" inputmode="decimal" placeholder="0" oninput="calculate()"></div></div>
+  <div class="field"><label for="canara">Current Canara balance <span class="hint">&mdash; also split into arbitrage</span></label>
+    <div class="inputwrap"><span class="rupee">&#8377;</span><input id="canara" type="text" inputmode="decimal" placeholder="0" oninput="calculate()"></div></div>
+  <div class="field"><label for="sbi">Current SBI balance</label>
+    <div class="inputwrap"><span class="rupee">&#8377;</span><input id="sbi" type="text" inputmode="decimal" placeholder="0" oninput="calculate()"></div></div>
+</div>
+
+<button type="button" class="calc" onclick="calculate()">Calculate allocation</button>
+
+<details class="settings">
+  <summary>Rules &amp; constants <span style="color:var(--muted)">&#9662;</span></summary>
+  <div class="settings-body"><div class="grid2">
+    <div class="mini"><label for="c_axisRetain">Axis retain</label><div class="inputwrap"><span class="rupee">&#8377;</span><input id="c_axisRetain" type="text" inputmode="decimal" value="115000" oninput="calculate()"></div></div>
+    <div class="mini"><label for="c_sbiBase">SBI operating base</label><div class="inputwrap"><span class="rupee">&#8377;</span><input id="c_sbiBase" type="text" inputmode="decimal" value="170000" oninput="calculate()"></div></div>
+    <div class="mini"><label for="c_sbiBuffer">SBI surplus buffer</label><div class="inputwrap"><span class="rupee">&#8377;</span><input id="c_sbiBuffer" type="text" inputmode="decimal" value="15000" oninput="calculate()"></div></div>
+    <div class="mini"><label for="c_canara">Canara target</label><div class="inputwrap"><span class="rupee">&#8377;</span><input id="c_canara" type="text" inputmode="decimal" value="55300" oninput="calculate()"></div></div>
+    <div class="mini"><label for="c_ammaAxis">Amma Axis</label><div class="inputwrap"><span class="rupee">&#8377;</span><input id="c_ammaAxis" type="text" inputmode="decimal" value="10000" oninput="calculate()"></div></div>
+    <div class="mini"><label for="c_sruthi">Sruthi</label><div class="inputwrap"><span class="rupee">&#8377;</span><input id="c_sruthi" type="text" inputmode="decimal" value="25000" oninput="calculate()"></div></div>
+    <div class="mini"><label for="c_ammaSBI">Amma SBI</label><div class="inputwrap"><span class="rupee">&#8377;</span><input id="c_ammaSBI" type="text" inputmode="decimal" value="5000" oninput="calculate()"></div></div>
+    <div class="mini"><label for="c_posb">POSB bills (fixed)</label><div class="inputwrap"><span class="rupee">&#8377;</span><input id="c_posb" type="text" inputmode="decimal" value="1200" oninput="calculate()"></div></div>
+  </div></div>
+</details>
+
+<div class="plan-section-title">Transfer execution plan</div>
+<div id="planBody">
+  <div class="empty">Enter your balances above, then tap <strong>Calculate allocation</strong>. Tap any card to see how its amount was worked out.</div>
+</div>
+
+<script>
+function toggleCard(el){ el.classList.toggle("open"); }
+
+function val(id){
+  var n = parseFloat(String(document.getElementById(id).value).replace(/[^0-9.\-]/g,""));
+  return isNaN(n) ? 0 : n;
+}
+function R(n){ return Math.round(n); }
+function inr(n){
+  var neg = n < 0; n = Math.abs(R(n));
+  var s = String(n), last3 = s.slice(-3), rest = s.slice(0,-3);
+  if(rest) last3 = "," + last3;
+  rest = rest.replace(/\B(?=(\d{2})+(?!\d))/g, ",");
+  return (neg ? "-" : "") + "\u20B9" + rest + last3;
+}
+function card(label, amt, detail, extra){
+  return '<div class="tx '+(extra||"")+'" onclick="toggleCard(this)">'+
+           '<div class="tx-top"><div class="tx-label">'+label+'</div><div class="tx-chev">&#8250;</div></div>'+
+           '<div class="tx-amt mono">'+inr(amt)+'</div>'+
+           '<div class="tx-detail"><div class="tx-detail-inner">'+detail+'</div></div>'+
+         '</div>';
+}
+function sline(label, amt){
+  return '<div class="sline"><span>'+label+'</span><span class="sp"></span><span class="sa">'+inr(amt)+'</span></div>';
+}
+
+function calculate(){
+  var salary = val("salary"), axisBal = val("axis"),
+      canaraBal = val("canara"), sbiBal = val("sbi");
+  var pool = salary + axisBal;
+
+  if(pool <= 0){
+    document.getElementById("planBody").innerHTML =
+      '<div class="empty">Enter your balances above, then tap <strong>Calculate allocation</strong>. Tap any card to see how its amount was worked out.</div>';
+    return;
+  }
+
+  var axisRetain = val("c_axisRetain"), sbiBase = val("c_sbiBase"),
+      sbiBuffer = val("c_sbiBuffer"), canaraTarget = val("c_canara"),
+      ammaAxis = R(val("c_ammaAxis")), sruthi = R(val("c_sruthi")),
+      ammaSBI = R(val("c_ammaSBI")), posbFixed = val("c_posb");
+
+  // Rule 3 — arbitrage from existing Canara balance
+  var sbiArb = R(canaraBal/2), kotakArb = R(canaraBal) - sbiArb, combinedArb = sbiArb + kotakArb;
+
+  // Rule 4 — SBI fixed leg, surplus cap always applied (buffer constant)
+  var sbiTarget = sbiBase + sbiBuffer;
+  var sbiFixed = R(Math.max(0, sbiTarget - sbiBal));
+  var sbiTotal = sbiFixed + combinedArb;
+
+  // Rule 5 — Canara top-up
+  var canaraTransfer = R(Math.max(0, canaraTarget - canaraBal));
+
+  // Rule 7 / Rule 2 — POSB sweeps remainder; pull back Canara if short
+  var posbTotal = R(pool - axisRetain - sbiTotal - canaraTransfer - ammaAxis - sruthi - ammaSBI);
+  var warn = "";
+  if(posbTotal < posbFixed){
+    var shortfall = posbFixed - posbTotal, reduce = Math.min(shortfall, canaraTransfer);
+    canaraTransfer -= reduce; posbTotal += reduce;
+    warn = (posbTotal < posbFixed)
+      ? "Pool can't cover all transfers and retain "+inr(axisRetain)+". Canara top-up is exhausted and POSB is below "+inr(posbFixed)+". Reduce a transfer or lower the Axis retain."
+      : "Pool was tight \u2014 Canara top-up reduced by "+inr(reduce)+" to keep POSB and the Axis retain intact (Rule 2).";
+  }
+  var sweep = posbTotal - posbFixed;
+  var axisFinal = pool - sbiTotal - canaraTransfer - ammaAxis - sruthi - ammaSBI - posbTotal;
+
+  // details
+  var sbiDetail =
+    sline("Fixed (operating)", sbiFixed) +
+    sline("SBI Arbitrage", sbiArb) +
+    sline("Kotak Arbitrage", kotakArb) +
+    '<div class="note" style="margin-top:9px">Existing '+inr(sbiBal)+' + '+inr(sbiFixed)+
+    ' brings SBI to '+inr(sbiBal+sbiFixed)+' ('+inr(sbiBase)+' operating + '+inr(sbiBuffer)+
+    ' buffer). Arbitrage splits your Canara balance into SBI &amp; Kotak.</div>';
+
+  var canaraDetail = '<span class="note">Tops up Canara to its '+inr(canaraTarget)+
+    ' target balance (target &minus; current '+inr(canaraBal)+').</span>';
+  var posbDetail = '<div>'+inr(posbFixed)+' fixed for bills</div>'+
+    '<div>+ <span class="sweep-amt">'+inr(sweep)+'</span> sweep of all excess pool funds</div>'+
+    '<div class="note" style="margin-top:9px">POSB absorbs everything left after the Axis retain and every other transfer.</div>';
+
+  var html =
+    '<div class="summary"><div><div class="lbl">Total pool</div><div class="big mono">'+inr(pool)+'</div></div>'+
+    '<div class="held"><span class="chip">&#10003; Axis held</span><div class="v mono">'+inr(axisRetain)+'</div></div></div>';
+
+  if(warn) html += '<div class="warn"><strong>!</strong> '+warn+'</div>';
+
+  html +=
+    card("SBI", sbiTotal, sbiDetail) +
+    card("Canara", canaraTransfer, canaraDetail) +
+    card("Amma Axis", ammaAxis, '<span class="note">Fixed monthly transfer to Amma\u2019s Axis account.</span>') +
+    card("Sruthi", sruthi, '<span class="note">Fixed monthly transfer to Sruthi.</span>') +
+    card("Amma SBI", ammaSBI, '<span class="note">Fixed monthly transfer to Amma\u2019s SBI account.</span>') +
+    card("POSB", posbTotal, posbDetail) +
+    card("Final Axis balance", axisFinal,
+      '<span class="note">What stays in Axis once every transfer above is pushed \u2014 always your '+inr(axisRetain)+' retain target.</span>',
+      "final");
+
+  document.getElementById("planBody").innerHTML = html;
+}
+
+try{
+  document.getElementById("monthLabel").textContent =
+    "Plan for " + new Date().toLocaleDateString("en-IN",{month:"long",year:"numeric"}) + " \u00B7 push every transfer from Axis.";
+}catch(e){}
+
+if("serviceWorker" in navigator){
+  window.addEventListener("load", function(){
+    navigator.serviceWorker.register("sw.js").catch(function(){});
+  });
+}
+</script>
+</body>
+</html>
