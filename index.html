@@ -41,9 +41,7 @@
   input[type=text]{width:100%;font-family:ui-monospace,"SF Mono",Menlo,monospace;font-size:17px;font-weight:500;padding:13px 14px 13px 30px;border:1.5px solid var(--line);border-radius:11px;background:#FBFCFB;color:var(--ink);}
   input[type=text]:focus{outline:none;border-color:var(--teal);background:#fff;}
   input::placeholder{color:#B7C2BC;}
-  button.calc{width:100%;font:inherit;font-size:16px;font-weight:700;color:#fff;background:var(--teal);border:none;border-radius:13px;padding:16px;cursor:pointer;margin-bottom:14px;}
-  button.calc:active{opacity:.85;}
-  details.settings{margin-bottom:14px;}
+  details.settings{margin:0 0 14px;}
   details.settings>summary{list-style:none;cursor:pointer;background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:15px 16px;font-size:13px;font-weight:600;display:flex;align-items:center;justify-content:space-between;}
   details.settings>summary::-webkit-details-marker{display:none;}
   details.settings[open]>summary{border-radius:var(--radius) var(--radius) 0 0;border-bottom:none;}
@@ -63,29 +61,32 @@
   .summary .held .chip{display:inline-flex;gap:5px;align-items:center;background:rgba(255,255,255,.14);color:#fff;font-size:11px;font-weight:700;padding:3px 9px;border-radius:999px;}
   .summary .held .v{font-size:16px;font-weight:700;margin-top:5px;}
 
-  /* transfer cards */
-  .tx{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:15px 16px;margin-bottom:11px;cursor:pointer;transition:border-color .15s;}
-  .tx:active{border-color:#C6D0CB;}
-  .tx-top{display:flex;align-items:center;justify-content:space-between;gap:10px;}
-  .tx-label{font-size:12px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--muted);}
-  .tx-chev{color:#B7C2BC;font-size:20px;line-height:1;transition:transform .2s;transform:rotate(90deg);}
-  .tx.open .tx-chev{transform:rotate(-90deg);}
-  .tx-amt{font-size:25px;font-weight:800;margin-top:5px;letter-spacing:-.01em;}
-  .tx-detail{max-height:0;overflow:hidden;transition:max-height .25s ease;}
-  .tx.open .tx-detail{max-height:420px;}
-  .tx-detail-inner{padding-top:13px;margin-top:13px;border-top:1px solid var(--line);font-size:13px;color:var(--muted);}
-  .tx-detail-inner .note{font-style:italic;}
+  /* flip cards */
+  .flip{ perspective:1200px; margin-bottom:11px; cursor:pointer; }
+  .flip-inner{ position:relative; transform-style:preserve-3d; transition:transform .5s cubic-bezier(.2,.7,.2,1); min-height:84px; }
+  .flip.flipped .flip-inner{ transform:rotateY(180deg); }
+  .face{ position:absolute; inset:0; -webkit-backface-visibility:hidden; backface-visibility:hidden; border:1px solid var(--line); border-radius:var(--radius); background:var(--card); padding:15px 16px; overflow:hidden; }
+  .face.back{ transform:rotateY(180deg); }
+  .turn{ position:absolute; top:13px; right:14px; color:#C0C9C4; font-size:15px; line-height:1; }
+  .face.front{ display:flex; flex-direction:column; justify-content:center; }
+  .tx-label{ font-size:12px; font-weight:700; letter-spacing:.05em; text-transform:uppercase; color:var(--muted); }
+  .tx-amt{ font-size:26px; font-weight:800; margin-top:4px; letter-spacing:-.01em; }
+  .back-title{ font-size:11px; font-weight:700; letter-spacing:.1em; text-transform:uppercase; color:var(--muted); margin-bottom:9px; }
+  .back-body{ font-size:13px; color:var(--muted); }
+  .back-body .note{ font-style:italic; }
   .sline{display:flex;align-items:baseline;gap:8px;padding:4px 0;}
   .sline .sp{flex:1;border-bottom:1px dotted #DCE3DF;transform:translateY(-3px);}
   .sline .sa{font-family:ui-monospace,monospace;font-weight:600;color:var(--ink);}
   .sweep-amt{color:var(--clay);font-weight:600;font-family:ui-monospace,monospace;}
 
-  .tx.final{background:var(--teal-soft);border-color:#C4E0D7;cursor:pointer;}
-  .tx.final .tx-label{color:var(--teal);}
-  .tx.final .tx-amt{color:var(--teal);}
-  .tx.final .tx-chev{color:#7FB6A6;}
+  .flip.final .face{ background:var(--teal-soft); border-color:#C4E0D7; }
+  .flip.final .tx-label{ color:var(--teal); }
+  .flip.final .tx-amt{ color:var(--teal); }
+  .flip.final .turn{ color:#7FB6A6; }
 
   .warn{background:var(--clay-soft);border:1px solid #E9C9B9;border-radius:11px;padding:11px 13px;font-size:13px;color:#8A3F22;margin-bottom:11px;}
+
+  @media (prefers-reduced-motion: reduce){ .flip-inner{ transition:none; } }
 </style>
 </head>
 <body>
@@ -107,8 +108,6 @@
     <div class="inputwrap"><span class="rupee">&#8377;</span><input id="sbi" type="text" inputmode="decimal" placeholder="0" oninput="calculate()"></div></div>
 </div>
 
-<button type="button" class="calc" onclick="calculate()">Calculate allocation</button>
-
 <details class="settings">
   <summary>Rules &amp; constants <span style="color:var(--muted)">&#9662;</span></summary>
   <div class="settings-body"><div class="grid2">
@@ -125,11 +124,11 @@
 
 <div class="plan-section-title">Transfer execution plan</div>
 <div id="planBody">
-  <div class="empty">Enter your balances above, then tap <strong>Calculate allocation</strong>. Tap any card to see how its amount was worked out.</div>
+  <div class="empty">Enter your balances above and the plan appears here. Tap any card to flip it and see how the amount was worked out.</div>
 </div>
 
 <script>
-function toggleCard(el){ el.classList.toggle("open"); }
+function flipCard(el){ el.classList.toggle("flipped"); }
 
 function val(id){
   var n = parseFloat(String(document.getElementById(id).value).replace(/[^0-9.\-]/g,""));
@@ -144,14 +143,35 @@ function inr(n){
   return (neg ? "-" : "") + "\u20B9" + rest + last3;
 }
 function card(label, amt, detail, extra){
-  return '<div class="tx '+(extra||"")+'" onclick="toggleCard(this)">'+
-           '<div class="tx-top"><div class="tx-label">'+label+'</div><div class="tx-chev">&#8250;</div></div>'+
-           '<div class="tx-amt mono">'+inr(amt)+'</div>'+
-           '<div class="tx-detail"><div class="tx-detail-inner">'+detail+'</div></div>'+
+  return '<div class="flip '+(extra||"")+'" onclick="flipCard(this)">'+
+           '<div class="flip-inner">'+
+             '<div class="face front"><span class="turn">&#8635;</span>'+
+               '<div class="tx-label">'+label+'</div>'+
+               '<div class="tx-amt mono">'+inr(amt)+'</div></div>'+
+             '<div class="face back"><span class="turn">&#8635;</span>'+
+               '<div class="back-title">'+label+'</div>'+
+               '<div class="back-body">'+detail+'</div></div>'+
+           '</div>'+
          '</div>';
 }
 function sline(label, amt){
   return '<div class="sline"><span>'+label+'</span><span class="sp"></span><span class="sa">'+inr(amt)+'</span></div>';
+}
+
+function sizeFlips(){
+  var inners = document.querySelectorAll(".flip-inner");
+  for(var i=0;i<inners.length;i++){
+    var inner = inners[i];
+    inner.style.height = "auto";
+    var faces = inner.querySelectorAll(".face"), h = 0;
+    for(var j=0;j<faces.length;j++){
+      var f = faces[j], prev = f.style.position;
+      f.style.position = "relative";          // measure in flow
+      if(f.offsetHeight > h) h = f.offsetHeight;
+      f.style.position = prev;                // restore absolute
+    }
+    inner.style.height = h + "px";
+  }
 }
 
 function calculate(){
@@ -161,7 +181,7 @@ function calculate(){
 
   if(pool <= 0){
     document.getElementById("planBody").innerHTML =
-      '<div class="empty">Enter your balances above, then tap <strong>Calculate allocation</strong>. Tap any card to see how its amount was worked out.</div>';
+      '<div class="empty">Enter your balances above and the plan appears here. Tap any card to flip it and see how the amount was worked out.</div>';
     return;
   }
 
@@ -194,14 +214,13 @@ function calculate(){
   var sweep = posbTotal - posbFixed;
   var axisFinal = pool - sbiTotal - canaraTransfer - ammaAxis - sruthi - ammaSBI - posbTotal;
 
-  // details
   var sbiDetail =
     sline("Fixed (operating)", sbiFixed) +
     sline("SBI Arbitrage", sbiArb) +
     sline("Kotak Arbitrage", kotakArb) +
     '<div class="note" style="margin-top:9px">Existing '+inr(sbiBal)+' + '+inr(sbiFixed)+
     ' brings SBI to '+inr(sbiBal+sbiFixed)+' ('+inr(sbiBase)+' operating + '+inr(sbiBuffer)+
-    ' buffer). Arbitrage splits your Canara balance into SBI &amp; Kotak.</div>';
+    ' buffer). Arbitrage splits your Canara balance across SBI &amp; Kotak.</div>';
 
   var canaraDetail = '<span class="note">Tops up Canara to its '+inr(canaraTarget)+
     ' target balance (target &minus; current '+inr(canaraBal)+').</span>';
@@ -227,12 +246,17 @@ function calculate(){
       "final");
 
   document.getElementById("planBody").innerHTML = html;
+  if(window.requestAnimationFrame){ requestAnimationFrame(sizeFlips); } else { sizeFlips(); }
 }
+
+window.addEventListener("resize", function(){ sizeFlips(); });
 
 try{
   document.getElementById("monthLabel").textContent =
     "Plan for " + new Date().toLocaleDateString("en-IN",{month:"long",year:"numeric"}) + " \u00B7 push every transfer from Axis.";
 }catch(e){}
+
+calculate();
 
 if("serviceWorker" in navigator){
   window.addEventListener("load", function(){
