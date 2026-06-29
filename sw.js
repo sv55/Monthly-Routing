@@ -1,4 +1,4 @@
-var CACHE = "routing-v2";
+var CACHE = "routing-v3";
 var ASSETS = [
   "./",
   "./index.html",
