@@ -69,12 +69,12 @@
   .face.back{ transform:rotateY(180deg); }
   .turn{ position:absolute; top:13px; right:14px; color:#C0C9C4; font-size:15px; line-height:1; }
   .face.front{ display:flex; flex-direction:column; justify-content:center; }
-  .tx-label{ font-size:12px; font-weight:700; letter-spacing:.05em; text-transform:uppercase; color:var(--muted); }
+  .tx-label{ font-size:12px; font-weight:700; letter-spacing:.05em; text-transform:uppercase; color:var(--muted); display:flex; align-items:center; }
   .tx-amt{ font-size:26px; font-weight:800; margin-top:4px; letter-spacing:-.01em; }
-  .back-title{ font-size:11px; font-weight:700; letter-spacing:.1em; text-transform:uppercase; color:var(--muted); margin-bottom:9px; }
+  .back-title{ font-size:11px; font-weight:700; letter-spacing:.1em; text-transform:uppercase; color:var(--muted); margin-bottom:9px; display:flex; align-items:center; }
   .back-body{ font-size:13px; color:var(--muted); }
   .back-body .note{ font-style:italic; }
-  .sline{display:flex;align-items:baseline;gap:8px;padding:4px 0;}
+  .sline{display:flex;align-items:center;gap:8px;padding:4px 0;}
   .sline .sp{flex:1;border-bottom:1px dotted #DCE3DF;transform:translateY(-3px);}
   .sline .sa{font-family:ui-monospace,monospace;font-weight:600;color:var(--ink);}
   .sweep-amt{color:var(--clay);font-weight:600;font-family:ui-monospace,monospace;}
@@ -86,7 +86,45 @@
 
   .warn{background:var(--clay-soft);border:1px solid #E9C9B9;border-radius:11px;padding:11px 13px;font-size:13px;color:#8A3F22;margin-bottom:11px;}
 
+  /* bank badges */
+  .bk{display:inline-flex;align-items:center;justify-content:center;min-width:20px;height:20px;border-radius:6px;font-size:9px;font-weight:800;color:#fff;vertical-align:middle;margin-right:5px;letter-spacing:0;padding:0 4px;flex-shrink:0;line-height:1;}
+  .bk-ippb{background:#DEBB00;color:#5C4500;}
+  .bk-posb{background:#E23D28;}
+  .bk-logo{width:20px;height:20px;object-fit:contain;vertical-align:middle;margin-right:5px;flex-shrink:0;border-radius:4px;}
+  .mini .bk{min-width:16px;height:16px;font-size:7.5px;border-radius:4px;margin-right:4px;padding:0 3px;}
+  .mini .bk-logo{width:16px;height:16px;margin-right:4px;}
+
   @media (prefers-reduced-motion: reduce){ .flip-inner{ transition:none; } }
+
+  /* ——— Tablet ——— */
+  @media (min-width: 700px){
+    body{max-width:960px;padding:32px 28px;}
+    h1{font-size:36px;}
+    .input-fields{display:grid;grid-template-columns:1fr 1fr;gap:0 18px;}
+    .input-fields .field{margin-bottom:16px;}
+    .grid2{grid-template-columns:repeat(3,1fr);}
+    #planBody{display:grid;grid-template-columns:1fr 1fr;gap:11px;}
+    #planBody>.summary,
+    #planBody>.warn,
+    #planBody>.flip.final{grid-column:1/-1;}
+    #planBody>.flip{margin-bottom:0;}
+    .summary .big{font-size:28px;}
+    .summary{padding:20px 24px;}
+    .face{padding:18px 20px;}
+  }
+
+  /* ——— Desktop two-panel ——— */
+  @media (min-width: 1100px){
+    body{max-width:1200px;padding:40px 36px;}
+    h1{font-size:40px;}
+    .layout{display:grid;grid-template-columns:400px 1fr;gap:32px;align-items:start;}
+    .panel-input{position:sticky;top:24px;}
+    .panel-plan{min-width:0;}
+    .grid2{grid-template-columns:1fr 1fr;}
+    .plan-section-title{margin-top:0;}
+    .input-fields{grid-template-columns:1fr;}
+    .input-fields .field{margin-bottom:14px;}
+  }
 </style>
 </head>
 <body>
@@ -96,36 +134,45 @@
   <div class="sub" id="monthLabel">Push every transfer from Axis.</div>
 </header>
 
+<div class="layout">
+<div class="panel-input">
+
 <div class="card">
   <p class="card-title">This month's inputs</p>
-  <div class="field"><label for="salary">Salary credited</label>
+  <div class="input-fields">
+  <div class="field"><label for="salary"><img class="bk-logo" src="logos/axis.svg" alt="Axis">Salary credited</label>
     <div class="inputwrap"><span class="rupee">&#8377;</span><input id="salary" type="text" inputmode="decimal" placeholder="0" oninput="calculate()"></div></div>
-  <div class="field"><label for="axis">Current Axis balance</label>
+  <div class="field"><label for="axis"><img class="bk-logo" src="logos/axis.svg" alt="Axis">Current Axis balance</label>
     <div class="inputwrap"><span class="rupee">&#8377;</span><input id="axis" type="text" inputmode="decimal" placeholder="0" oninput="calculate()"></div></div>
-  <div class="field"><label for="canara">Current Canara balance <span class="hint">&mdash; also split into arbitrage</span></label>
-    <div class="inputwrap"><span class="rupee">&#8377;</span><input id="canara" type="text" inputmode="decimal" placeholder="0" oninput="calculate()"></div></div>
-  <div class="field"><label for="sbi">Current SBI balance</label>
+  <div class="field"><label for="slice"><img class="bk-logo" src="logos/slice.png" alt="Slice">Current Slice balance <span class="hint">&mdash; also split into arbitrage</span></label>
+    <div class="inputwrap"><span class="rupee">&#8377;</span><input id="slice" type="text" inputmode="decimal" placeholder="0" oninput="calculate()"></div></div>
+  <div class="field"><label for="sbi"><img class="bk-logo" src="logos/sbi.svg" alt="SBI">Current SBI balance</label>
     <div class="inputwrap"><span class="rupee">&#8377;</span><input id="sbi" type="text" inputmode="decimal" placeholder="0" oninput="calculate()"></div></div>
+  </div>
 </div>
 
 <details class="settings">
   <summary>Rules &amp; constants <span style="color:var(--muted)">&#9662;</span></summary>
   <div class="settings-body"><div class="grid2">
-    <div class="mini"><label for="c_axisRetain">Axis retain</label><div class="inputwrap"><span class="rupee">&#8377;</span><input id="c_axisRetain" type="text" inputmode="decimal" value="115000" oninput="calculate()"></div></div>
-    <div class="mini"><label for="c_sbiBase">SBI operating base</label><div class="inputwrap"><span class="rupee">&#8377;</span><input id="c_sbiBase" type="text" inputmode="decimal" value="170000" oninput="calculate()"></div></div>
-    <div class="mini"><label for="c_sbiBuffer">SBI surplus buffer</label><div class="inputwrap"><span class="rupee">&#8377;</span><input id="c_sbiBuffer" type="text" inputmode="decimal" value="10000" oninput="calculate()"></div></div>
-    <div class="mini"><label for="c_canara">Canara target</label><div class="inputwrap"><span class="rupee">&#8377;</span><input id="c_canara" type="text" inputmode="decimal" value="55300" oninput="calculate()"></div></div>
-    <div class="mini"><label for="c_ammaAxis">Amma Axis</label><div class="inputwrap"><span class="rupee">&#8377;</span><input id="c_ammaAxis" type="text" inputmode="decimal" value="10000" oninput="calculate()"></div></div>
-    <div class="mini"><label for="c_sruthi">Sruthi</label><div class="inputwrap"><span class="rupee">&#8377;</span><input id="c_sruthi" type="text" inputmode="decimal" value="25000" oninput="calculate()"></div></div>
-    <div class="mini"><label for="c_ammaSBI">Amma SBI</label><div class="inputwrap"><span class="rupee">&#8377;</span><input id="c_ammaSBI" type="text" inputmode="decimal" value="5000" oninput="calculate()"></div></div>
-    <div class="mini"><label for="c_posb">POSB bills (fixed)</label><div class="inputwrap"><span class="rupee">&#8377;</span><input id="c_posb" type="text" inputmode="decimal" value="3300" oninput="calculate()"></div></div>
+    <div class="mini"><label for="c_axisRetain"><img class="bk-logo" src="logos/axis.svg" alt="Axis">Axis retain</label><div class="inputwrap"><span class="rupee">&#8377;</span><input id="c_axisRetain" type="text" inputmode="decimal" value="115000" oninput="calculate()"></div></div>
+    <div class="mini"><label for="c_sbiBase"><img class="bk-logo" src="logos/sbi.svg" alt="SBI">SBI operating base</label><div class="inputwrap"><span class="rupee">&#8377;</span><input id="c_sbiBase" type="text" inputmode="decimal" value="170000" oninput="calculate()"></div></div>
+    <div class="mini"><label for="c_sbiBuffer"><img class="bk-logo" src="logos/sbi.svg" alt="SBI">SBI surplus buffer</label><div class="inputwrap"><span class="rupee">&#8377;</span><input id="c_sbiBuffer" type="text" inputmode="decimal" value="10000" oninput="calculate()"></div></div>
+    <div class="mini"><label for="c_slice"><img class="bk-logo" src="logos/slice.png" alt="Slice">Slice target</label><div class="inputwrap"><span class="rupee">&#8377;</span><input id="c_slice" type="text" inputmode="decimal" value="55300" oninput="calculate()"></div></div>
+    <div class="mini"><label for="c_ammaAxis"><img class="bk-logo" src="logos/axis.svg" alt="Axis">Amma Axis</label><div class="inputwrap"><span class="rupee">&#8377;</span><input id="c_ammaAxis" type="text" inputmode="decimal" value="10000" oninput="calculate()"></div></div>
+    <div class="mini"><label for="c_sruthi"><img class="bk-logo" src="logos/axis.svg" alt="Axis">Sruthi Axis</label><div class="inputwrap"><span class="rupee">&#8377;</span><input id="c_sruthi" type="text" inputmode="decimal" value="25000" oninput="calculate()"></div></div>
+    <div class="mini"><label for="c_ammaSBI"><img class="bk-logo" src="logos/sbi.svg" alt="SBI">Amma SBI</label><div class="inputwrap"><span class="rupee">&#8377;</span><input id="c_ammaSBI" type="text" inputmode="decimal" value="5000" oninput="calculate()"></div></div>
+    <div class="mini"><label for="c_ippb"><img class="bk-logo" src="logos/indiapost.png" alt="IPPB">IPPB bills (fixed)</label><div class="inputwrap"><span class="rupee">&#8377;</span><input id="c_ippb" type="text" inputmode="decimal" value="1200" oninput="calculate()"></div></div>
   </div></div>
 </details>
+</div><!-- /panel-input -->
 
+<div class="panel-plan">
 <div class="plan-section-title">Transfer execution plan</div>
 <div id="planBody">
   <div class="empty">Enter your balances above and the plan appears here. Tap any card to flip it and see how the amount was worked out.</div>
 </div>
+</div><!-- /panel-plan -->
+</div><!-- /layout -->
 
 <script>
 function flipCard(el){ el.classList.toggle("flipped"); }
@@ -135,6 +182,11 @@ function val(id){
   return isNaN(n) ? 0 : n;
 }
 function R(n){ return Math.round(n); }
+function bk(code){
+  var logos={axis:'logos/axis.svg',sbi:'logos/sbi.svg',kotak:'logos/kotak.svg',slice:'logos/slice.png',zerodha:'logos/zerodha.svg',ippb:'logos/indiapost.png',posb:'logos/indiapost.png'};
+  if(logos[code]) return '<img class="bk-logo" src="'+logos[code]+'" alt="'+code+'">';
+  return '';
+}
 function inr(n){
   var neg = n < 0; n = Math.abs(R(n));
   var s = String(n), last3 = s.slice(-3), rest = s.slice(0,-3);
@@ -176,7 +228,7 @@ function sizeFlips(){
 
 function calculate(){
   var salary = val("salary"), axisBal = val("axis"),
-      canaraBal = val("canara"), sbiBal = val("sbi");
+      sliceBal = val("slice"), sbiBal = val("sbi");
   var pool = salary + axisBal;
 
   if(pool <= 0){
@@ -186,47 +238,57 @@ function calculate(){
   }
 
   var axisRetain = val("c_axisRetain"), sbiBase = val("c_sbiBase"),
-      sbiBuffer = val("c_sbiBuffer"), canaraTarget = val("c_canara"),
+      sbiBuffer = val("c_sbiBuffer"), sliceTarget = val("c_slice"),
       ammaAxis = R(val("c_ammaAxis")), sruthi = R(val("c_sruthi")),
-      ammaSBI = R(val("c_ammaSBI")), posbFixed = val("c_posb");
+      ammaSBI = R(val("c_ammaSBI")), ippbBills = val("c_ippb");
 
-  // Rule 3 — arbitrage from existing Canara balance
-  var sbiArb = R(canaraBal/2), kotakArb = R(canaraBal) - sbiArb, combinedArb = sbiArb + kotakArb;
+  // Rule 3 — arbitrage from existing Slice balance
+  // SBI minimum ₹1,000; Kotak in multiples of ₹100; below min → all to Kotak
+  var totalArb = R(sliceBal);
+  var halfArb = R(sliceBal / 2);
+  var sbiArb, kotakArb;
+  if(halfArb < 1000){
+    kotakArb = Math.floor(totalArb / 100) * 100;
+    sbiArb = 0;
+  } else {
+    kotakArb = Math.floor(halfArb / 100) * 100;
+    sbiArb = totalArb - kotakArb;
+  }
+  var combinedArb = sbiArb + kotakArb;
 
   // Rule 4 — SBI fixed leg, surplus cap always applied (buffer constant)
   var sbiTarget = sbiBase + sbiBuffer;
   var sbiFixed = R(Math.max(0, sbiTarget - sbiBal));
   var sbiTotal = sbiFixed + combinedArb;
 
-  // Rule 5 — Canara top-up
-  var canaraTransfer = R(Math.max(0, canaraTarget - canaraBal));
+  // Rule 5 — Slice top-up
+  var sliceTransfer = R(Math.max(0, sliceTarget - sliceBal));
 
-  // Rule 7 / Rule 2 — POSB sweeps remainder; pull back Canara if short
-  var posbTotal = R(pool - axisRetain - sbiTotal - canaraTransfer - ammaAxis - sruthi - ammaSBI);
+  // Rule 7 / Rule 2 — POSB sweeps remainder; pull back Slice if short
+  var ippbPosb = R(pool - axisRetain - sbiTotal - sliceTransfer - ammaAxis - sruthi - ammaSBI);
   var warn = "";
-  if(posbTotal < posbFixed){
-    var shortfall = posbFixed - posbTotal, reduce = Math.min(shortfall, canaraTransfer);
-    canaraTransfer -= reduce; posbTotal += reduce;
-    warn = (posbTotal < posbFixed)
-      ? "Pool can't cover all transfers and retain "+inr(axisRetain)+". Canara top-up is exhausted and POSB is below "+inr(posbFixed)+". Reduce a transfer or lower the Axis retain."
-      : "Pool was tight \u2014 Canara top-up reduced by "+inr(reduce)+" to keep POSB and the Axis retain intact (Rule 2).";
+  if(ippbPosb < ippbBills){
+    var shortfall = ippbBills - ippbPosb, reduce = Math.min(shortfall, sliceTransfer);
+    sliceTransfer -= reduce; ippbPosb += reduce;
+    warn = (ippbPosb < ippbBills)
+      ? "Pool can't cover all transfers and retain "+inr(axisRetain)+". Slice top-up is exhausted and IPPB is below "+inr(ippbBills)+". Reduce a transfer or lower the Axis retain."
+      : "Pool was tight \u2014 Slice top-up reduced by "+inr(reduce)+" to keep IPPB bills and the Axis retain intact (Rule 2).";
   }
-  var sweep = posbTotal - posbFixed;
-  var axisFinal = pool - sbiTotal - canaraTransfer - ammaAxis - sruthi - ammaSBI - posbTotal;
+  var sweep = ippbPosb - ippbBills;
+  var axisFinal = pool - sbiTotal - sliceTransfer - ammaAxis - sruthi - ammaSBI - ippbPosb;
 
   var sbiDetail =
-    sline("Fixed (operating)", sbiFixed) +
-    sline("SBI Arbitrage", sbiArb) +
-    sline("Kotak Arbitrage", kotakArb) +
+    sline(bk('sbi')+"Fixed (operating)", sbiFixed) +
+    sline(bk('zerodha')+"SBI Arbitrage", sbiArb) +
+    sline(bk('zerodha')+"Kotak Arbitrage", kotakArb) +
     '<div class="note" style="margin-top:9px">Existing '+inr(sbiBal)+' + '+inr(sbiFixed)+
     ' brings SBI to '+inr(sbiBal+sbiFixed)+' ('+inr(sbiBase)+' operating + '+inr(sbiBuffer)+
-    ' buffer). Arbitrage splits your Canara balance across SBI &amp; Kotak.</div>';
+    ' buffer). Arbitrage splits your Slice balance across SBI &amp; Kotak.</div>';
 
-  var canaraDetail = '<span class="note">Tops up Canara to its '+inr(canaraTarget)+
-    ' target balance (target &minus; current '+inr(canaraBal)+').</span>';
-  var posbDetail = '<div>'+inr(posbFixed)+' fixed for bills</div>'+
-    '<div>+ <span class="sweep-amt">'+inr(sweep)+'</span> sweep of all excess pool funds</div>'+
-    '<div class="note" style="margin-top:9px">POSB absorbs everything left after the Axis retain and every other transfer.</div>';
+  var sliceDetail = '<span class="note">Tops up Slice to its '+inr(sliceTarget)+
+    ' target balance (target &minus; current '+inr(sliceBal)+').</span>';
+  var ippbDetail = '<span class="note">Fixed monthly bills payment to IPPB ('+inr(ippbBills)+').</span>';
+  var posbDetail = '<span class="note">Sweep of all excess pool funds. POSB absorbs everything left after the Axis retain, IPPB bills, and every other transfer.</span>';
 
   var html =
     '<div class="summary"><div><div class="lbl">Total pool</div><div class="big mono">'+inr(pool)+'</div></div>'+
@@ -235,13 +297,14 @@ function calculate(){
   if(warn) html += '<div class="warn"><strong>!</strong> '+warn+'</div>';
 
   html +=
-    card("SBI", sbiTotal, sbiDetail) +
-    card("Canara", canaraTransfer, canaraDetail) +
-    card("Amma Axis", ammaAxis, '<span class="note">Fixed monthly transfer to Amma\u2019s Axis account.</span>') +
-    card("Sruthi", sruthi, '<span class="note">Fixed monthly transfer to Sruthi.</span>') +
-    card("Amma SBI", ammaSBI, '<span class="note">Fixed monthly transfer to Amma\u2019s SBI account.</span>') +
-    card("POSB", posbTotal, posbDetail) +
-    card("Final Axis balance", axisFinal,
+    card(bk('sbi')+"SBI", sbiTotal, sbiDetail) +
+    card(bk('slice')+"Slice", sliceTransfer, sliceDetail) +
+    card(bk('axis')+"Amma Axis", ammaAxis, '<span class="note">Fixed monthly transfer to Amma\u2019s Axis account.</span>') +
+    card(bk('axis')+"Sruthi Axis", sruthi, '<span class="note">Fixed monthly transfer to Sruthi\u2019s Axis account.</span>') +
+    card(bk('sbi')+"Amma SBI", ammaSBI, '<span class="note">Fixed monthly transfer to Amma\u2019s SBI account.</span>') +
+    card(bk('ippb')+"IPPB", ippbBills, ippbDetail) +
+    card(bk('posb')+"POSB", sweep, posbDetail) +
+    card(bk('axis')+"Final Axis balance", axisFinal,
       '<span class="note">What stays in Axis once every transfer above is pushed \u2014 always your '+inr(axisRetain)+' retain target.</span>',
       "final");
 

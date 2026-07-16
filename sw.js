@@ -1,11 +1,17 @@
-var CACHE = "routing-v3";
+var CACHE = "routing-v5";
 var ASSETS = [
   "./",
   "./index.html",
   "./manifest.webmanifest",
   "./icon-192.png",
   "./icon-512.png",
-  "./apple-touch-icon.png"
+  "./apple-touch-icon.png",
+  "./logos/axis.svg",
+  "./logos/sbi.svg",
+  "./logos/kotak.svg",
+  "./logos/slice.png",
+  "./logos/zerodha.svg",
+  "./logos/indiapost.png"
 ];
 
 self.addEventListener("install", function(e){
