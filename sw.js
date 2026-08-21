@@ -1,4 +1,4 @@
-var CACHE = "routing-v8";
+var CACHE = "routing-v9";
 var ASSETS = [
   "./",
   "./index.html",
@@ -11,7 +11,6 @@ var ASSETS = [
   "./logos/kotak.svg",
   "./logos/canara.svg",
   "./logos/hsbc.svg",
-  "./logos/slice.png",
   "./logos/zerodha.svg",
   "./logos/indiapost.png"
 ];

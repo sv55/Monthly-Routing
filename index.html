@@ -169,8 +169,6 @@
     <div class="inputwrap"><span class="rupee">&#8377;</span><input id="cc_hsbc" type="text" inputmode="decimal" placeholder="0" oninput="calculate()"></div></div>
   <div class="field"><label for="cc_axis"><img class="bk-logo" src="logos/axis.svg" alt="Axis">Axis MyZone Credit Card</label>
     <div class="inputwrap"><span class="rupee">&#8377;</span><input id="cc_axis" type="text" inputmode="decimal" placeholder="0" oninput="calculate()"></div></div>
-  <div class="field"><label for="cc_slice"><img class="bk-logo" src="logos/slice.png" alt="Slice">Super Slice Credit Card</label>
-    <div class="inputwrap"><span class="rupee">&#8377;</span><input id="cc_slice" type="text" inputmode="decimal" placeholder="0" oninput="calculate()"></div></div>
   </div>
 </div>
 
@@ -206,7 +204,7 @@ function val(id){
 }
 function R(n){ return Math.round(n); }
 function bk(code){
-  var logos={axis:'logos/axis.svg',sbi:'logos/sbi.svg',kotak:'logos/kotak.svg',canara:'logos/canara.svg',hsbc:'logos/hsbc.svg',slice:'logos/slice.png',zerodha:'logos/zerodha.svg',ippb:'logos/indiapost.png',posb:'logos/indiapost.png'};
+  var logos={axis:'logos/axis.svg',sbi:'logos/sbi.svg',kotak:'logos/kotak.svg',canara:'logos/canara.svg',hsbc:'logos/hsbc.svg',zerodha:'logos/zerodha.svg',ippb:'logos/indiapost.png',posb:'logos/indiapost.png'};
   if(logos[code]) return '<img class="bk-logo" src="'+logos[code]+'" alt="'+code+'">';
   return '';
 }
@@ -255,8 +253,8 @@ function calculate(){
 
   // Credit card outstanding — deducted from Canara
   var ccSBI = val("cc_sbi"), ccHSBC = val("cc_hsbc"),
-      ccAxis = val("cc_axis"), ccSlice = val("cc_slice");
-  var totalCC = ccSBI + ccHSBC + ccAxis + ccSlice;
+      ccAxis = val("cc_axis");
+  var totalCC = ccSBI + ccHSBC + ccAxis;
   var canaraBal = Math.max(0, canaraBalRaw - totalCC);
   var pool = salary + axisBal;
 
@@ -323,7 +321,6 @@ function calculate(){
       (ccSBI  ? sline(bk('sbi')+"SBI Cashback", -ccSBI)  : '') +
       (ccHSBC ? sline(bk('hsbc')+"HSBC Live+", -ccHSBC)   : '') +
       (ccAxis ? sline(bk('axis')+"Axis MyZone", -ccAxis)  : '') +
-      (ccSlice? sline(bk('slice')+"Super Slice", -ccSlice) : '') +
       sline('<strong>Effective Canara</strong>', canaraBal) +
       '</div>';
   }
